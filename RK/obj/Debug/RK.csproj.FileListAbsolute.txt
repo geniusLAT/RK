@@ -1,0 +1,10 @@
+C:\Users\geniuslat\source\repos\RK\RK\bin\Debug\RK.exe.config
+C:\Users\geniuslat\source\repos\RK\RK\bin\Debug\RK.exe
+C:\Users\geniuslat\source\repos\RK\RK\bin\Debug\RK.pdb
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.csproj.AssemblyReference.cache
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.Form1.resources
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.Properties.Resources.resources
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.csproj.GenerateResource.cache
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.csproj.CoreCompileInputs.cache
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.exe
+C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.pdb
