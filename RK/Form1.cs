@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading; //Именно это пространство имен поддерживает многопоточность
+using System.Windows.Forms.DataVisualization.Charting; //Именно это пространство имен поддерживает многопоточность
 
 namespace RK
 {
@@ -19,9 +20,24 @@ namespace RK
             InitializeComponent();
         }
 
-        public List<Point> Line(double ym, double xm, double h)
+        public class H_point
         {
-            List<Point> points = new List<Point>();
+            public double x;
+            public double y;
+            public double h;
+
+            public H_point(double x, double y,double h)
+            {
+                this.x = x;
+                this.y = y;
+                this.h = h;
+            }
+
+        }
+
+        public List<H_point> Line(double ym, double xm, double h,double epsilon)
+        {
+            List<H_point> points = new List<H_point>();
             //оно рисуется на промежутке от 0 до 0.5
             int n = (int)(0.5f / h);
 
@@ -31,39 +47,55 @@ namespace RK
             double old_y = ym;
             double old_x = xm;
 
-            float koef_x = 900 / 0.5f; //Я забыл, что промежуток на котором мы строим функцию константа
+            double normal_y = ym;
+            double double_y = ym;
 
+            //just for debug
+            int e = 0;
+            int nn = 0;
 
             for (int i = 0; i < n; i++)
             {
-                points.Add(new Point((int)(old_x * koef_x), (int)(400 - old_y * 100 * 5)));
-                old_y = GetNextY(old_y, old_x, h);
+
+               
+
+                /*Мы строим график, пытаемся делать с шагом h и с шагом 0.5h,
+                 сравниваем точность, которая там написана. Если она не достаточна, 
+                то мы принимаем за новый шаг, шаг в два раза меньший.
+                
+                 */
+                points.Add(new H_point((old_x ),old_y,h));
+                normal_y = GetNextY(old_y, old_x, h);
+                double_y = GetNextY(old_y, old_x, 0.5 * h);
+
+                double local_contrast = normal_y - double_y;
+                if (local_contrast < 0) local_contrast *= -1;
+
+                old_y = normal_y;
+
+                if(local_contrast>epsilon)
+                {
+                    //old_y = double_y;
+                    h = h * 0.5;
+                    //недостаточная точность
+
+                    nn++;
+                }
+                else
+                {
+                    e++;
+                    //достаточная точность
+                }
                 old_x += h;
 
-
-                //points.Add(new Point((int)(old_x* koef_x), (int)(400-old_y*100* 5)));
-
-                //400 высота поля для рисования графика, там начинается подсчёт сверху, но нам привычнее, чтобы он начинался снизу
+                
 
             }
-
+            label1.Text += "\nenough=" + e.ToString() + " not" + nn.ToString();
             return points;
         }
 
-        public void DrawPlot(PictureBox box, List<Point> points)
-        {
-
-
-
-            Graphics graphics_h = box.CreateGraphics();
-            Pen pen = new Pen(Color.Blue, 3f);
-
-
-
-
-
-            graphics_h.DrawLines(pen, points.ToArray());
-        }
+        
 
 
         double my_func(double x, double y)
@@ -93,6 +125,12 @@ namespace RK
 
         private void Calculate()
         {
+            //Убираем старые штуки
+            chart1.Series["Series1"].Points.Clear();
+            chart2.Series["Series1"].Points.Clear();
+
+            chart2.Series["Series1"].ChartType = chart1.Series["Series1"].ChartType = SeriesChartType.Line;
+
             //y'=x^2+y^2
             //y(0)=0.4       x принадлежит [0,1]
 
@@ -111,12 +149,12 @@ namespace RK
             double epsilon = 0.00001;
             try
             {
-                epsilon = Convert.ToDouble(epsilon_box.Text);
-                label1.Text += "epsilon=" + epsilon_box.Text;
+                epsilon = Math.Pow(10,-Convert.ToDouble(epsilon_box.Text));
+                label1.Text += "epsilon=" + epsilon.ToString();
             }
             catch
             {
-                label1.Text += "default epsilon=" + epsilon_box.Text;
+                label1.Text += "default epsilon=" + epsilon.ToString();
             }
 
 
@@ -180,12 +218,24 @@ namespace RK
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            
+
 
             //Thread myThread = new Thread(f1); //Создаем новый объект потока (Thread)
             //myThread.Start();
-            DrawPlot(plot_h1, Line(ym, xm, h));
-            DrawPlot(plot_h2, Line(ym, xm, 2 * h));
+            //DrawPlot(plot_h1, Line(ym, xm, h));
+            List<H_point> points= Line(ym,xm,h,epsilon);
+            //DrawPlot(plot_h2, Line(ym, xm, 2 * h));
+
+            label1.Text += "\n" + points.Count + " points";
+            for (int i = 0; i < points.Count; i++)
+            {
+                chart1.Series["Series1"].Points.AddXY(points[i].x, points[i].y);
+                chart2.Series["Series1"].Points.AddXY(points[i].x, points[i].h);
+
+                label1.Text += "\n" + points[i].h;
+            }
+            
+
             stopwatch.Stop();
 
             label1.Text += "\n" + stopwatch.ElapsedMilliseconds.ToString() + " ms";
@@ -196,6 +246,10 @@ namespace RK
         {
             //
             label1.Text = "Count\n";
+
+
+            
+
             Calculate();
         }
     }

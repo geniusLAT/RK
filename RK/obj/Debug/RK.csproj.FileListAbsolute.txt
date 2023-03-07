@@ -8,3 +8,13 @@ C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.csproj.GenerateResource.cache
 C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.csproj.CoreCompileInputs.cache
 C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.exe
 C:\Users\geniuslat\source\repos\RK\RK\obj\Debug\RK.pdb
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\bin\Debug\RK.exe.config
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\bin\Debug\RK.exe
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\bin\Debug\RK.pdb
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.csproj.AssemblyReference.cache
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.Form1.resources
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.Properties.Resources.resources
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.csproj.GenerateResource.cache
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.csproj.CoreCompileInputs.cache
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.exe
+D:\Учёба\4 курс\4 курс 7 семестр\Берегов\Пересдача\RK\RK\obj\Debug\RK.pdb
