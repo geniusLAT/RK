@@ -22,33 +22,45 @@ namespace RK
 
         public class H_point
         {
-            public double x;
-            public double y;
-            public double h;
+            
+            public decimal x;
+            public decimal y;
+            public decimal h;
+            public decimal c;//just for debug, it is contrast
 
-            public H_point(double x, double y,double h)
+            public H_point(decimal x, decimal y,decimal h)
             {
                 this.x = x;
                 this.y = y;
                 this.h = h;
             }
 
+            public H_point(decimal x, decimal y, decimal h, decimal c)
+            {
+                this.x = x;
+                this.y = y;
+                this.h = h;
+                this.c = c;
+            }
+
         }
 
-        public List<H_point> Line(double ym, double xm, double h,double epsilon)
+        public List<H_point> Line(decimal ym, decimal xm, decimal h,decimal epsilon)
         {
             List<H_point> points = new List<H_point>();
             //оно рисуется на промежутке от 0 до 0.5
-            int n = (int)(0.5f / h);
+            int n = (int)(0.5f / (double)h);
             int max_t = 0;
 
 
 
-            double old_y = ym;
-            double old_x = xm;
+            decimal old_y = ym;
+            decimal old_x = xm;
 
-            double normal_y = ym;
-            double double_y = ym;
+            decimal normal_y = ym;
+            decimal decimal_y = ym;
+
+            decimal contrast = 0;
 
             //just for debug
             int e = 0;
@@ -57,8 +69,10 @@ namespace RK
             for (int i = 0; i < n; i++)
             {
                 label3.Text = "\n old_x" + old_x.ToString()+" "+ old_y.ToString();
-                points.Add(new H_point((old_x), old_y, h));
-                
+                points.Add(new H_point((old_x), old_y, h,contrast));
+
+                //h = (decimal)0.1f;
+
                 bool CountNeeded = true;
                 int t = 0;
                 while (CountNeeded && t<1500)
@@ -71,18 +85,18 @@ namespace RK
                      */
                     
                     normal_y = GetNextY(old_y, old_x, h);
-                    double_y = GetNextY(old_y, old_x, 0.5 * h);
-                    double_y = GetNextY(double_y, old_x+0.5*h, 0.5 * h);
+                    decimal_y = GetNextY(old_y, old_x, (decimal)0.5 * h);
+                    decimal_y = GetNextY(decimal_y, old_x+(decimal)0.5*h, (decimal)0.5 * h);
 
-                    double local_contrast = normal_y - double_y;
-                    if (local_contrast < 0) local_contrast *= -1;
+                    contrast = normal_y - decimal_y;
+                    if (contrast < 0) contrast *= -1;
 
                     old_y = normal_y;
 
-                    if (local_contrast > epsilon)
+                    if (contrast > epsilon)
                     {
-                        //old_y = double_y;
-                        h = h * 0.5;
+                        //old_y = decimal_y;
+                        h = h * (decimal)0.5;
                         //недостаточная точность
 
                         nn++;
@@ -111,28 +125,28 @@ namespace RK
         
 
 
-        double my_func(double x, double y)
+        decimal my_func(decimal x, decimal y)
         {
             //Из подсказки на доске следует, что f(y,x) - это y'
 
-            return x * x + y * y;
+            return (decimal)(x * x + y * y);
         }
 
 
-        double GetNextY(double ym, double xm, double h)
+        decimal GetNextY(decimal ym, decimal xm, decimal h)
         {
 
             //По какой-то причине в примере представлено несколько способов, но не указано в каких
             // случаях их допустимо применять, так что видимо можно взять любой (в них формулы для кашек отличаются)
 
-            double k0 = h * my_func(xm, ym);
-            double k1 = h * my_func(xm + h / 2, ym + k0 / 2);
-            double k2 = h * my_func(xm + h / 2, ym + k1 / 2);
-            double k3 = h * my_func(xm + h, ym + k2);
+            decimal k0 = h * my_func(xm, ym);
+            decimal k1 = h * my_func(xm + h / 2, ym + k0 / 2);
+            decimal k2 = h * my_func(xm + h / 2, ym + k1 / 2);
+            decimal k3 = h * my_func(xm + h, ym + k2);
 
-            double delta_ym = (1.0f / 6.0f) * (k0 + 2 * k1 + 2 * k2 + k3);
+            decimal delta_ym = (decimal)(((decimal)1.0f / (decimal)6.0f) * (k0 + (decimal)2 * k1 + (decimal)2 * k2 + k3));
 
-            double next_y = ym + delta_ym;
+            decimal next_y = ym + delta_ym;
             return next_y;
         }
 
@@ -141,28 +155,29 @@ namespace RK
             //Убираем старые штуки
             chart1.Series["Series1"].Points.Clear();
             chart2.Series["Series1"].Points.Clear();
+            chart3.Series["Series1"].Points.Clear();
 
-            chart2.Series["Series1"].ChartType = chart1.Series["Series1"].ChartType = SeriesChartType.Line;
+            chart3.Series["Series1"].ChartType =chart2.Series["Series1"].ChartType = chart1.Series["Series1"].ChartType = SeriesChartType.Line;
 
             //y'=x^2+y^2
             //y(0)=0.4       x принадлежит [0,1]
 
             //для начала мы ище нужные нам k
-            double h = 0.1f;
+            decimal h = (decimal)0.1f;
 
             //Судя по примеру k0=h*f(xm,ym)
 
             //Судя по примеру xm и ym это значения из частного кейса ym=0.4f, xm = 0
 
-            double ym = 0.4f;
-            double xm = 0;
+            decimal ym = (decimal)0.4f;
+            decimal xm = 0;
 
 
 
-            double epsilon = 0.00001;
+            decimal epsilon = (decimal)0.00001;
             try
             {
-                epsilon = Math.Pow(10,-Convert.ToDouble(epsilon_box.Text));
+                epsilon =(decimal) Math.Pow(10,-Convert.ToDouble(epsilon_box.Text));
                 label1.Text += "epsilon=" + epsilon.ToString();
             }
             catch
@@ -193,17 +208,17 @@ namespace RK
                 интересно, тут уже не используется никакой y2. А результат второго подсчёта с h сравнивается с результатом первого с h2
                  
                  */
-                h = h / 2.0f;
+                h = h / (decimal)2.0f;
 
-                double y1_h1 = GetNextY(ym, xm, h);
+                decimal y1_h1 = GetNextY(ym, xm, h);
                 //label1.Text += "\n" + h.ToString() + " ->     y1_h1=" + y1_h1.ToString();
-                double y2_h1 = GetNextY(y1_h1, h, h);
+                decimal y2_h1 = GetNextY(y1_h1, h, h);
                 //label1.Text += "\n" + h.ToString() + " ->     y2_h1=" + y2_h1.ToString();
 
-                double y1_h2 = GetNextY(ym, xm, 2 * h);
+                decimal y1_h2 = GetNextY(ym, xm, 2 * h);
                 //label1.Text += "\n" + h.ToString() + " ->     y1_h2=" + y1_h2.ToString();
 
-                double contrast = y1_h2 - y2_h1;
+                decimal contrast = y1_h2 - y2_h1;
                 if (contrast < 0) contrast *= -1;
 
                 //label1.Text += "\n\n contrast=" + contrast.ToString();
@@ -244,8 +259,9 @@ namespace RK
             {
                 chart1.Series["Series1"].Points.AddXY(points[i].x, points[i].y);
                 chart2.Series["Series1"].Points.AddXY(points[i].x, points[i].h);
+                chart3.Series["Series1"].Points.AddXY(points[i].x, points[i].c);
 
-                //label1.Text += "\n" + points[i].h;
+                label3.Text += "\n" + points[i].h;
             }
             
 
