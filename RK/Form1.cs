@@ -40,9 +40,9 @@ namespace RK
             List<H_point> points = new List<H_point>();
             //оно рисуется на промежутке от 0 до 0.5
             int n = (int)(0.5f / h);
+            int max_t = 0;
 
 
-            //label1.Text += "\n old_x" + xm.ToString();
 
             double old_y = ym;
             double old_x = xm;
@@ -56,40 +56,53 @@ namespace RK
 
             for (int i = 0; i < n; i++)
             {
-
-               
-
-                /*Мы строим график, пытаемся делать с шагом h и с шагом 0.5h,
-                 сравниваем точность, которая там написана. Если она не достаточна, 
-                то мы принимаем за новый шаг, шаг в два раза меньший.
+                label3.Text = "\n old_x" + old_x.ToString()+" "+ old_y.ToString();
+                points.Add(new H_point((old_x), old_y, h));
                 
-                 */
-                points.Add(new H_point((old_x ),old_y,h));
-                normal_y = GetNextY(old_y, old_x, h);
-                double_y = GetNextY(old_y, old_x, 0.5 * h);
-
-                double local_contrast = normal_y - double_y;
-                if (local_contrast < 0) local_contrast *= -1;
-
-                old_y = normal_y;
-
-                if(local_contrast>epsilon)
+                bool CountNeeded = true;
+                int t = 0;
+                while (CountNeeded && t<1500)
                 {
-                    //old_y = double_y;
-                    h = h * 0.5;
-                    //недостаточная точность
+                    t++;
+                    /*Мы строим график, пытаемся делать с шагом h и с шагом 0.5h,
+                     сравниваем точность, которая там написана. Если она не достаточна, 
+                    то мы принимаем за новый шаг, шаг в два раза меньший.
 
-                    nn++;
+                     */
+                    
+                    normal_y = GetNextY(old_y, old_x, h);
+                    double_y = GetNextY(old_y, old_x, 0.5 * h);
+                    double_y = GetNextY(double_y, old_x+0.5*h, 0.5 * h);
+
+                    double local_contrast = normal_y - double_y;
+                    if (local_contrast < 0) local_contrast *= -1;
+
+                    old_y = normal_y;
+
+                    if (local_contrast > epsilon)
+                    {
+                        //old_y = double_y;
+                        h = h * 0.5;
+                        //недостаточная точность
+
+                        nn++;
+                    }
+                    else
+                    {
+                        e++;
+                        CountNeeded = false;
+                        //достаточная точность
+                    }
+                    
+
+
                 }
-                else
-                {
-                    e++;
-                    //достаточная точность
-                }
+
+                if (t > max_t) max_t = t;
+                label3.Text += "\n t=" +t.ToString() ;
+                label3.Text += "\n max_t=" + max_t.ToString() ;
                 old_x += h;
-
-                
-
+                //label1.Text += "\n " + t.ToString() ;
             }
             label1.Text += "\nenough=" + e.ToString() + " not" + nn.ToString();
             return points;
@@ -183,17 +196,17 @@ namespace RK
                 h = h / 2.0f;
 
                 double y1_h1 = GetNextY(ym, xm, h);
-                label1.Text += "\n" + h.ToString() + " ->     y1_h1=" + y1_h1.ToString();
+                //label1.Text += "\n" + h.ToString() + " ->     y1_h1=" + y1_h1.ToString();
                 double y2_h1 = GetNextY(y1_h1, h, h);
-                label1.Text += "\n" + h.ToString() + " ->     y2_h1=" + y2_h1.ToString();
+                //label1.Text += "\n" + h.ToString() + " ->     y2_h1=" + y2_h1.ToString();
 
                 double y1_h2 = GetNextY(ym, xm, 2 * h);
-                label1.Text += "\n" + h.ToString() + " ->     y1_h2=" + y1_h2.ToString();
+                //label1.Text += "\n" + h.ToString() + " ->     y1_h2=" + y1_h2.ToString();
 
                 double contrast = y1_h2 - y2_h1;
                 if (contrast < 0) contrast *= -1;
 
-                label1.Text += "\n\n contrast=" + contrast.ToString();
+                //label1.Text += "\n\n contrast=" + contrast.ToString();
 
                 if (contrast < epsilon)
                 {
@@ -232,7 +245,7 @@ namespace RK
                 chart1.Series["Series1"].Points.AddXY(points[i].x, points[i].y);
                 chart2.Series["Series1"].Points.AddXY(points[i].x, points[i].h);
 
-                label1.Text += "\n" + points[i].h;
+                //label1.Text += "\n" + points[i].h;
             }
             
 
