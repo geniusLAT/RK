@@ -22,24 +22,35 @@ namespace RK
 
         public class H_point
         {
+
             public double x;
             public double y;
             public double h;
+            public double c;//just for debug, it is contrast
 
-            public H_point(double x, double y,double h)
+            public H_point(double x, double y, double h)
             {
                 this.x = x;
                 this.y = y;
                 this.h = h;
             }
 
+            public H_point(double x, double y, double h, double c)
+            {
+                this.x = x;
+                this.y = y;
+                this.h = h;
+                this.c = c;
+            }
+
         }
 
-        public List<H_point> Line(double ym, double xm, double h,double epsilon)
+        public List<H_point> Line(double ym, double xm, double h, double epsilon)
         {
+            h = 0.07f;
             List<H_point> points = new List<H_point>();
             //оно рисуется на промежутке от 0 до 0.5
-            int n = (int)(0.5f / h);
+            int n = (int)(0.5f / (double)h);
             int max_t = 0;
 
 
@@ -50,18 +61,22 @@ namespace RK
             double normal_y = ym;
             double double_y = ym;
 
+            double contrast = 0;
+
             //just for debug
             int e = 0;
             int nn = 0;
 
-            for (int i = 0; i < n; i++)
+            while(old_x<0.5f)
             {
-                label3.Text = "\n old_x" + old_x.ToString()+" "+ old_y.ToString();
-                points.Add(new H_point((old_x), old_y, h));
-                
+                label3.Text = "\n old_x" + old_x.ToString() + " " + old_y.ToString();
+                points.Add(new H_point((old_x), old_y, h, contrast));
+
+                //h = (double)0.1f;
+
                 bool CountNeeded = true;
                 int t = 0;
-                while (CountNeeded && t<1500)
+                while (CountNeeded && t < 1500)
                 {
                     t++;
                     /*Мы строим график, пытаемся делать с шагом h и с шагом 0.5h,
@@ -69,20 +84,20 @@ namespace RK
                     то мы принимаем за новый шаг, шаг в два раза меньший.
 
                      */
-                    
-                    normal_y = GetNextY(old_y, old_x, h);
-                    double_y = GetNextY(old_y, old_x, 0.5 * h);
-                    double_y = GetNextY(double_y, old_x+0.5*h, 0.5 * h);
 
-                    double local_contrast = normal_y - double_y;
-                    if (local_contrast < 0) local_contrast *= -1;
+                    normal_y = GetNextY(old_y, old_x, h);
+                    double_y = GetNextY(old_y, old_x, (double)0.5 * h);
+                    double_y = GetNextY(double_y, old_x + (double)0.5 * h, (double)0.5 * h);
+
+                    contrast = normal_y - double_y;
+                    if (contrast < 0) contrast *= -1;
 
                     old_y = normal_y;
 
-                    if (local_contrast > epsilon)
+                    if (contrast > epsilon)
                     {
                         //old_y = double_y;
-                        h = h * 0.5;
+                        h = h * (double)0.5;
                         //недостаточная точность
 
                         nn++;
@@ -93,14 +108,14 @@ namespace RK
                         CountNeeded = false;
                         //достаточная точность
                     }
-                    
+
 
 
                 }
 
                 if (t > max_t) max_t = t;
-                label3.Text += "\n t=" +t.ToString() ;
-                label3.Text += "\n max_t=" + max_t.ToString() ;
+                label3.Text += "\n t=" + t.ToString();
+                label3.Text += "\n max_t=" + max_t.ToString();
                 old_x += h;
                 //label1.Text += "\n " + t.ToString() ;
             }
@@ -108,14 +123,14 @@ namespace RK
             return points;
         }
 
-        
+
 
 
         double my_func(double x, double y)
         {
             //Из подсказки на доске следует, что f(y,x) - это y'
 
-            return x * x + y * y;
+            return (double)(x * x + y * y);
         }
 
 
@@ -130,7 +145,7 @@ namespace RK
             double k2 = h * my_func(xm + h / 2, ym + k1 / 2);
             double k3 = h * my_func(xm + h, ym + k2);
 
-            double delta_ym = (1.0f / 6.0f) * (k0 + 2 * k1 + 2 * k2 + k3);
+            double delta_ym = (double)(((double)1.0f / (double)6.0f) * (k0 + (double)2 * k1 + (double)2 * k2 + k3));
 
             double next_y = ym + delta_ym;
             return next_y;
@@ -141,28 +156,29 @@ namespace RK
             //Убираем старые штуки
             chart1.Series["Series1"].Points.Clear();
             chart2.Series["Series1"].Points.Clear();
+            chart3.Series["Series1"].Points.Clear();
 
-            chart2.Series["Series1"].ChartType = chart1.Series["Series1"].ChartType = SeriesChartType.Line;
+            chart3.Series["Series1"].ChartType = chart2.Series["Series1"].ChartType = chart1.Series["Series1"].ChartType = SeriesChartType.Line;
 
             //y'=x^2+y^2
             //y(0)=0.4       x принадлежит [0,1]
 
             //для начала мы ище нужные нам k
-            double h = 0.1f;
+            double h = (double)0.1f;
 
             //Судя по примеру k0=h*f(xm,ym)
 
             //Судя по примеру xm и ym это значения из частного кейса ym=0.4f, xm = 0
 
-            double ym = 0.4f;
+            double ym = (double)0.4f;
             double xm = 0;
 
 
 
-            double epsilon = 0.00001;
+            double epsilon = (double)0.00001;
             try
             {
-                epsilon = Math.Pow(10,-Convert.ToDouble(epsilon_box.Text));
+                epsilon = (double)Math.Pow(10, -Convert.ToDouble(epsilon_box.Text));
                 label1.Text += "epsilon=" + epsilon.ToString();
             }
             catch
@@ -172,7 +188,7 @@ namespace RK
 
 
             int count = 50;
-            bool NotEnoughAccurate = true;
+            bool NotEnoughAccurate = false;
             while (NotEnoughAccurate && count > 0)
             {
                 //Чтобы нельзя было мататься вечно в цикле
@@ -193,7 +209,7 @@ namespace RK
                 интересно, тут уже не используется никакой y2. А результат второго подсчёта с h сравнивается с результатом первого с h2
                  
                  */
-                h = h / 2.0f;
+                h = h / (double)2.0f;
 
                 double y1_h1 = GetNextY(ym, xm, h);
                 //label1.Text += "\n" + h.ToString() + " ->     y1_h1=" + y1_h1.ToString();
@@ -236,7 +252,7 @@ namespace RK
             //Thread myThread = new Thread(f1); //Создаем новый объект потока (Thread)
             //myThread.Start();
             //DrawPlot(plot_h1, Line(ym, xm, h));
-            List<H_point> points= Line(ym,xm,h,epsilon);
+            List<H_point> points = Line(ym, xm, h, epsilon);
             //DrawPlot(plot_h2, Line(ym, xm, 2 * h));
 
             label1.Text += "\n" + points.Count + " points";
@@ -244,10 +260,11 @@ namespace RK
             {
                 chart1.Series["Series1"].Points.AddXY(points[i].x, points[i].y);
                 chart2.Series["Series1"].Points.AddXY(points[i].x, points[i].h);
+                chart3.Series["Series1"].Points.AddXY(points[i].x, points[i].c);
 
-                //label1.Text += "\n" + points[i].h;
+                label3.Text += "\n" + points[i].h;
             }
-            
+
 
             stopwatch.Stop();
 
@@ -261,7 +278,7 @@ namespace RK
             label1.Text = "Count\n";
 
 
-            
+
 
             Calculate();
         }
