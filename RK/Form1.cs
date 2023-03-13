@@ -45,9 +45,9 @@ namespace RK
 
         }
 
-        public List<H_point> Line(double ym, double xm, double h, double epsilon)
+        public List<H_point> Line(double ym, double xm, double h, double epsilon,double def_h)
         {
-            h = 0.07f;
+            //h = def_h;
             List<H_point> points = new List<H_point>();
             //оно рисуется на промежутке от 0 до 0.5
             int n = (int)(0.5f / (double)h);
@@ -186,6 +186,17 @@ namespace RK
                 label1.Text += "default epsilon=" + epsilon.ToString();
             }
 
+            double def_h = (double)0.00001;
+            try
+            {
+                def_h = Convert.ToDouble(def_h_box.Text);
+                label1.Text += "def_h=" + def_h.ToString();
+            }
+            catch
+            {
+                label1.Text += "default def_h=" + def_h.ToString();
+            }
+
 
             int count = 50;
             bool NotEnoughAccurate = false;
@@ -252,7 +263,7 @@ namespace RK
             //Thread myThread = new Thread(f1); //Создаем новый объект потока (Thread)
             //myThread.Start();
             //DrawPlot(plot_h1, Line(ym, xm, h));
-            List<H_point> points = Line(ym, xm, h, epsilon);
+            List<H_point> points = Line(ym, xm, h, epsilon, def_h);
             //DrawPlot(plot_h2, Line(ym, xm, 2 * h));
 
             label1.Text += "\n" + points.Count + " points";
