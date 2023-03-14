@@ -45,7 +45,7 @@ namespace RK
 
         }
 
-        public List<H_point> Line(double ym, double xm, double h, double epsilon,double def_h)
+        public List<H_point> Line(double ym, double xm, double xfinish,double h, double epsilon,double def_h)
         {
             //h = def_h;
             List<H_point> points = new List<H_point>();
@@ -67,7 +67,8 @@ namespace RK
             int e = 0;
             int nn = 0;
 
-            while(old_x<0.5f)
+            //while(old_x<0.5f)
+            while(old_x< xfinish)
             {
                 label3.Text = "\n old_x" + old_x.ToString() + " " + old_y.ToString();
                 points.Add(new H_point((old_x), old_y, h, contrast));
@@ -172,7 +173,9 @@ namespace RK
 
             double ym = (double)0.4f;
             double xm = 0;
-
+            
+            
+            double x_finish = (double)0.5f;
 
 
             double epsilon = (double)0.00001;
@@ -195,6 +198,36 @@ namespace RK
             catch
             {
                 label1.Text += "default def_h=" + def_h.ToString();
+            }
+
+            try
+            {
+                xm = Convert.ToDouble(startX_box.Text);
+                label1.Text += "xm=" + xm.ToString();
+            }
+            catch
+            {
+                label1.Text += "default xm=" + xm.ToString();
+            }
+
+            try
+            {
+                x_finish = Convert.ToDouble(finishX_box.Text);
+                label1.Text += "x_finish=" + x_finish.ToString();
+            }
+            catch
+            {
+                label1.Text += "default x_finish=" + x_finish.ToString();
+            }
+
+            try
+            {
+                ym = Convert.ToDouble(y0_box.Text);
+                label1.Text += "ym=" + ym.ToString();
+            }
+            catch
+            {
+                label1.Text += "default ym=" + ym.ToString();
             }
 
 
@@ -263,7 +296,7 @@ namespace RK
             //Thread myThread = new Thread(f1); //Создаем новый объект потока (Thread)
             //myThread.Start();
             //DrawPlot(plot_h1, Line(ym, xm, h));
-            List<H_point> points = Line(ym, xm, h, epsilon, def_h);
+            List<H_point> points = Line(ym, xm, x_finish, h, epsilon, def_h);
             //DrawPlot(plot_h2, Line(ym, xm, 2 * h));
 
             label1.Text += "\n" + points.Count + " points";
